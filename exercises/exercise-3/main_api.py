@@ -14,4 +14,13 @@ async def read_root():
     # Will be converted to a JSON respone by FastAPI
     return {"message": "Hello from my first FastAPI API!"}
 
-# Part 5
+@app.get("/greet/{name}")
+async def greet_by_name(name:str):
+    return{"greeting": f"Hello, {name}"}
+
+@app.get("/items/")
+async def read_item(item_id: int, query_param:str | None = None):
+    response_data = {"item_id":item_id}
+    if query_param:
+        response_data["query_param_received"] = query_param
+    return response_data
