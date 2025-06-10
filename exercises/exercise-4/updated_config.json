@@ -1,0 +1,24 @@
+{
+  "deviceId": "sensor-hub-01",
+  "location": {
+    "building": "A",
+    "floor": 3,
+    "room": "305-B"
+  },
+  "isActive": false,
+  "sensors": [
+    {
+      "type": "temperature",
+      "unit": "celsius",
+      "port": 1,
+      "lastReading": 22.7
+    },
+    {
+      "type": "humidity",
+      "unit": "%",
+      "port": 2,
+      "lastReading": 65.5
+    }
+  ],
+  "firmvareVersion": "v1.2.3"
+}
