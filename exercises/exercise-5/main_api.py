@@ -5,7 +5,10 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel 
 from typing import List
 from typing import Optional
+from openai import OpenAI, OpenAIError
+client = OpenAI()
 
+client.api_key = ""
 
 # Inherit from BaseModel
 class QuestionBase(BaseModel):
@@ -124,4 +127,20 @@ async def patch_question(question_id: int, question_patch: QuestionPatch):
             return question
     raise HTTPException(status_code=404, detail="Question not found")
 
-# TODO - META API (Check info)
+
+@app.post("/openai/completions", tags=["OpenAI"], description="Get a completion from OpenAI GPT-4.")
+async def get_openai_completion(prompt: str):
+    try:
+        prompt="Create a Python function that sorts letters in a word"
+
+        response = client.completions.create(
+            model="gpt-3.5-turbo",
+            prompt=prompt,
+            max_tokens=200
+        )   
+
+        code = response.choices[0].text.strip()
+        print(code)
+        return {"response": code}
+    except OpenAIError as e:
+        raise HTTPException(status_code=500, detail=str(e))
