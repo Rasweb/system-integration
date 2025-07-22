@@ -1,0 +1,6 @@
+The necessary packages:
+- fastapi
+- uvicorn
+- pydantic
+
+e.g pip install pydantic
