@@ -10,14 +10,6 @@ app = FastAPI()
 # mobile app or a web dashboard to register, monitor, and control various smart
 # devices within a home.
 
-# Data modeling and validation
-# You must use Pydantic  BaseModels to define the schema for your resource.
-# Create separate models for creation (e.g.,  DeviceCreate, without the  id), full
-# representation (e.g.,  Device, with the  id), and updates (e.g.,  DeviceUpdate, with
-# optional fields).
-# Your API must use these models for request body validation and as
-# response_models to ensure consistent output.
-
 class DeviceBase(BaseModel):
     name: str # living room lamp
     type: str # light, thermostat or smart_plug
@@ -74,15 +66,30 @@ async def create_device(device: DeviceCreate):
 @app.get("/devices", tags=["Read"], description="Retrieves a list of all devices.")
 async def get_devices():
     return fake_devices_db
+    
 
-@app.get("/device/{id}", tags=["Read"], description="Retrieves a single resource by its unique ID")
+@app.get("/device/{id}", response_model=Device, tags=["Read"], description="Retrieves a single resource by its unique ID")
 async def get_specific_device(id: int):
-    print("Get specific device by id")
+    for device in fake_devices_db:
+        if device["id"] == id:
+            return device
+        raise HTTPException(status_code=404, detail="Device not found")
 
-@app.put("/device/{id}", tags=["Update"], description="Fully updates an existing resource")
-async def update_device(id: int):
-    print("Update device")
-
+@app.put("/device/{id}", response_model=Device, tags=["Update"], description="Fully updates an existing resource")
+async def update_device(id: int, update: DeviceUpdate):
+    for device in fake_devices_db:
+        if device["id"] == id:
+            if update.name is not None:
+                device["name"] = update.name
+            if update.type is not None:
+                device["type"] = update.type
+            if update.location is not None:
+                device["location"] = update.is_on
+            if update.value is not None:
+                device["value"] = update.value
+        return device
+    raise HTTPException(status_code=404, detail="Device not found")
+    
 @app.delete("/device/{id}", tags=["Delete"], description="Deletes a device")
 async def delete_device(id: int):
     print("Delete a device by id")
