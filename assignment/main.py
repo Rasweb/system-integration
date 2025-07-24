@@ -33,6 +33,7 @@ class DeviceUpdate(BaseModel):
 class Device(DeviceBase):
     id: int
 
+
 # A list dict
 fake_devices_db = [
     {
@@ -46,7 +47,7 @@ fake_devices_db = [
 ]
 
 
-@app.post("/devices", response_model=DeviceBase, tags=["Create"], description="Creates a new device.")
+@app.post("/devices", response_model=Device, tags=["Create"], description="Creates a new device.")
 async def create_device(device: DeviceCreate):
     # generator expression to iterate over each dictionary(q) in fake_devices_db and astract value associated with "id"
     # max() finds the highest value of key "id" from the list
@@ -73,27 +74,40 @@ async def get_specific_device(id: int):
     for device in fake_devices_db:
         if device["id"] == id:
             return device
-        raise HTTPException(status_code=404, detail="Device not found")
+    raise HTTPException(status_code=404, detail="Device not found")
 
 @app.put("/device/{id}", response_model=Device, tags=["Update"], description="Fully updates an existing resource")
-async def update_device(id: int, update: DeviceUpdate):
+async def update_device(id: int, update: DeviceCreate):
+    for device in fake_devices_db:
+        if device["id"] == id:
+            device["name"] = update.name
+            device["type"] = update.type
+            device["location"] = update.is_on
+            device["value"] = update.value
+        return device
+    raise HTTPException(status_code=404, detail="Device not found")
+    
+@app.delete("/device/{id}", response_model=Device, tags=["Delete"], description="Deletes a device")
+async def delete_device(id: int):
+    for device in fake_devices_db:
+        if device["id"] == id:
+            fake_devices_db.remove(device)
+            return device
+    raise HTTPException(status_code=404, detail="Device not found")
+
+@app.patch("/device/{id}", response_model=Device, tags=["Update"], description="Update specific fields of a device")
+async def update_specific_fields(id: int, update: DeviceUpdate):
     for device in fake_devices_db:
         if device["id"] == id:
             if update.name is not None:
                 device["name"] = update.name
-            if update.type is not None:
+            if update.type is not None:                
                 device["type"] = update.type
-            if update.location is not None:
+            if update.is_on is not None:
                 device["location"] = update.is_on
             if update.value is not None:
                 device["value"] = update.value
         return device
     raise HTTPException(status_code=404, detail="Device not found")
-    
-@app.delete("/device/{id}", tags=["Delete"], description="Deletes a device")
-async def delete_device(id: int):
-    print("Delete a device by id")
-
-
 
 
