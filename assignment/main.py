@@ -82,9 +82,10 @@ async def update_device(id: int, update: DeviceCreate):
         if device["id"] == id:
             device["name"] = update.name
             device["type"] = update.type
-            device["location"] = update.is_on
+            device["location"] = update.location
+            device["is_on"]=update.is_on
             device["value"] = update.value
-        return device
+            return device
     raise HTTPException(status_code=404, detail="Device not found")
     
 @app.delete("/device/{id}", response_model=Device, tags=["Delete"], description="Deletes a device")
@@ -103,11 +104,13 @@ async def update_specific_fields(id: int, update: DeviceUpdate):
                 device["name"] = update.name
             if update.type is not None:                
                 device["type"] = update.type
+            if update.location is not None:
+                device["location"] = update.location
             if update.is_on is not None:
-                device["location"] = update.is_on
+                device["is_on"] = update.is_on
             if update.value is not None:
                 device["value"] = update.value
-        return device
+            return device
     raise HTTPException(status_code=404, detail="Device not found")
 
 
