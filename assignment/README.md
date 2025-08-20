@@ -11,77 +11,29 @@
   - [Future Improvements](#future_improvements)
 
 ## Overview
-The IoT Control API is a RESTful web service built using Python, FastAPI, and Pydantic. This API serves as the backend for a smart home hub, allowing users to register, monitor, and control various smart devices within a home. The API supports CRUD (Create, Read, Update, Delete) operations for managing devices, providing a seamless experience for users interacting with their smart home systems.
+This project provides a RESTful API for a smart home hub. The API allows you to register, monitor, and control various smart devices within a home. You can create, read, update, and delete devices, as well as update specific device fields. I used Pydantic and Fastapi to build and serve my project.
 
-### Features
-- Create new devices
-- Retrieve a list of all devices or a specific device by ID
-- Update device information fully or partially
-- Delete devices from the system
-
-### Technical Requirements
-The API includes the following Pydantic model fields for devices:
-- `id` (integer, server-assigned)
-- `name` (string, e.g., "Living Room Lamp")
-- `type` (string, must be one of: "light", "thermostat", "smart_plug")
-- `location` (string, e.g., "Kitchen")
-- `is_on` (boolean, representing the on/off state)
-- `value` (Optional float, e.g., brightness for a light (0-100), temperature for a thermostat)
-
-### Installation
-To run the API, ensure you have Python installed. Then, follow these steps:
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd <repository-directory>
-   ```
-2. Install the required packages:
-    - [Go here to find the required packages](./requirements.txt)
-3. Run the API using Uvicorn
-    ```bash
-    uvicorn main:app-reload
+## How to Run
+1. Install dependencies
+    Run the following command in the project directory(using pip)
     ```
-4. Access the API documentation at `http://127.0.0.1:8000/docs` 
-   
-
-### API Endpoints
-
-| HTTP  Method | URL Path     | Description                                 | Request Body Schema | Response Code | Response Schema |
-|--------------|--------------|---------------------------------------------|---------------------|---------------|-----------------|
-| POST         | /devices     | Creates a new device.                       | DeviceCreate        | 201           | Device          |
-| GET          | /devices     | Retrieves a list of all devices.            | None                | 200           | List[Device]    |
-| GET          | /device/{id} | Retrieves a single device by its unique ID. | None                | 200           | Device          |
-| PUT          | /device/{id} | Fully updates an existing device            | DeviceCreate        | 200           | Device          |
-| DELETE       | /device/{id} | Deletes a device.                           | None                | 200           | Device          |
-| PATCH        | /device/{id} | Updates a specific fields of a device.      | DeviceUpdate        | 200           | Device          |
-
-### Example Usage
-- Create a Device
-    ```bash
-    curl -X POST "http://127.0.0.1:8000/devices" -H "Content-Type: application/json" -d '{"name": "Living Room Lamp", "type": "light", "location": "kitchen", "is_on": false, "value": 10.20}'
-    ```
-- Retrieve All Devices
-    ```bash
-    curl -X GET "http://127.0.0.1:8000/devices"
-    ``` 
-- Update a Device
-    ```bash
-    curl -X PUT "http://127.0.0.1:8000/device/1" -H "Content-Type: application/json" -d '{"name": "Updated Lamp", "type": "light", "location": "living room", "is_on": true, "value": 15.0}'
-    ```
-- Delete a Device
-    ```bash
-    curl -X DELETE "http://127.0.0.1:8000/device/1"
+    pip install fastapi uvicorn pydantic
     ```
 
-### Challenges and Solutions
-During the development of this API, one significant challenge was ensuring proper error handling. This was addressed by implementing FastAPI's HTTPException to return a 404 status code with a descriptive message when a device is not found.
+2. Start the API server
+    ```
+    uvicorn main:app --reload
+    ```
 
-### Evaluation and Reflection
-The API successfully meets the requirements outlined in the assignment. However, there are limitations, such as the lack of persistent storage and authentication. 
+3. Access the interactive API docs
+    ```
+    http://127.0.0.1:8000/docs
+    ```
 
-### Future Improvements
-- Database Integration:
-    * Connecting the API to a real database (e.g. PostgreSQL) for persistent storage of device data.
-- User Authentication:
-    * Implementing authentication mechanisms to secure the API and restrict access to authorized users.
+## Endpoints
+- `POST /devices` - Create a new device
+- `GET /devices` - List all devices
+- `GET /device/{id}` - Get a device by ID
+- `PUT /device/{id}` - Fully update a device 
+- `PATCH /device/{id}` - Partially update a device
+- `DELETE /device/{id}` - Delete a device

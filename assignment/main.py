@@ -46,9 +46,17 @@ fake_devices_db = [
     },
 ]
 
-
+ # Check for unique names
+def check_unique_name(name: str, exluded_id: Optional[int] = None):
+    for existing in fake_devices_db:
+        # if name is the same return it lowercased
+        if existing["name"].lower() == name.lower():
+            if exluded_id is None or existing["id"] !=exluded_id:
+                raise HTTPException(status_code=400, detail="Device name must be unique.")
+        
 @app.post("/devices", response_model=Device, tags=["Create"], description="Creates a new device.")
 async def create_device(device: DeviceCreate):
+    check_unique_name(device.name)        
     # generator expression to iterate over each dictionary(q) in fake_devices_db and astract value associated with "id"
     # max() finds the highest value of key "id" from the list
     new_id = max(q["id"] for q in fake_devices_db) + 1 if fake_devices_db else 1
@@ -77,10 +85,12 @@ async def get_specific_device(id: int):
     raise HTTPException(status_code=404, detail="Device not found")
 
 @app.put("/device/{id}", response_model=Device, tags=["Update"], description="Fully updates an existing resource")
-async def update_device(id: int, update: DeviceCreate):
+async def update_device(id: int, update: DeviceUpdate):
     for device in fake_devices_db:
         if device["id"] == id:
-            device["name"] = update.name
+            if update.name is not None:
+                check_unique_name(update.name, exluded_id=id)
+                device["name"]=update.name
             device["type"] = update.type
             device["location"] = update.location
             device["is_on"]=update.is_on
@@ -101,6 +111,7 @@ async def update_specific_fields(id: int, update: DeviceUpdate):
     for device in fake_devices_db:
         if device["id"] == id:
             if update.name is not None:
+                check_unique_name(update.name, exluded_id=id)
                 device["name"] = update.name
             if update.type is not None:                
                 device["type"] = update.type
@@ -112,5 +123,3 @@ async def update_specific_fields(id: int, update: DeviceUpdate):
                 device["value"] = update.value
             return device
     raise HTTPException(status_code=404, detail="Device not found")
-
-
