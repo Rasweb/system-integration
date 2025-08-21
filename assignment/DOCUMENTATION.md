@@ -51,7 +51,7 @@ To run the API, ensure you have Python installed. Then, follow these steps:
 
 | HTTP  Method | URL Path     | Description                                 | Request Body Schema | Response Code | Response Schema |
 |--------------|--------------|---------------------------------------------|---------------------|---------------|-----------------|
-| POST         | /devices     | Creates a new device.                       | DeviceCreate        | 201           | Device          |
+| POST         | /devices     | Creates a new device.                       | DeviceCreate        | 200           | Device          |
 | GET          | /devices     | Retrieves a list of all devices.            | None                | 200           | List[Device]    |
 | GET          | /device/{id} | Retrieves a single device by its unique ID. | None                | 200           | Device          |
 | PUT          | /device/{id} | Fully updates an existing device            | DeviceCreate        | 200           | Device          |
